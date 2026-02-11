@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rover Control</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Rover Control</h1>
+    <div id="status">
+      <span id="ws-indicator" class="indicator disconnected"></span>
+      <span id="ws-label">Disconnected</span>
+      <span id="serial-badge" class="badge hidden">Serial</span>
+      <span id="dev-badge" class="badge dev hidden">Dev Mode</span>
+    </div>
+
+    <div id="controls">
+      <div class="row">
+        <button class="ctrl" data-cmd="FWD">&#9650;<br><small>W</small></button>
+      </div>
+      <div class="row">
+        <button class="ctrl" data-cmd="LFT">&#9664;<br><small>A</small></button>
+        <button class="ctrl stop" data-cmd="STP">&#9632;<br><small>S</small></button>
+        <button class="ctrl" data-cmd="RGT">&#9654;<br><small>D</small></button>
+      </div>
+      <div class="row">
+        <button class="ctrl" data-cmd="BCK">&#9660;<br><small>S</small></button>
+      </div>
+    </div>
+
+    <div id="log"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
