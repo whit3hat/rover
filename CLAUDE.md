@@ -9,8 +9,9 @@ Rover — a two-board robotics project that drives a physical rover using motors
 ## Hardware
 
 ### Raspberry Pi Zero W (host/server)
+- **OS**: Raspberry Pi OS Lite (32-bit) — Trixie (Debian 13). 32-bit required (ARMv6)
 - Hosts a web interface for controlling the rover
-- Communicates with the Elegoo Mega 2560 (likely over serial/USB)
+- Communicates with the Elegoo Mega 2560 over serial/USB
 - WiFi-capable (802.11 b/g/n), single-core 1GHz ARM11, 512MB RAM
 - 40-pin GPIO header: 3.3V logic, supports UART, SPI, I2C, PWM
 - Docs: https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
