@@ -25,7 +25,41 @@ Rover — a two-board robotics project that drives a physical rover using motors
 - 4 hardware UARTs (Serial0–3), SPI, I2C
 - USB-B connection to Pi for serial communication and programming
 - Docs (PDF): https://m.media-amazon.com/images/I/91RAy+evkrL.pdf
-- Motor and servo details TBD
+
+### DRV8833 Dual H-Bridge Motor Driver
+- **Supply voltage**: 2.7V – 10.8V
+- **Current**: 1.5A per channel continuous, two independent H-bridges
+- **Control**: 2 logic-level input pins per motor (4 pins total: xIN1, xIN2, xIN3, xIN4)
+- **PWM speed control**: Apply PWM to input pins to modulate motor speed
+- **Protections**: Thermal shutdown, integrated flyback diodes (no external diodes needed)
+- **Decoupling**: 0.1µF ceramic + 10µF electrolytic near VM pin
+- **Direction truth table** (per channel):
+  - IN1=HIGH, IN2=LOW → Forward
+  - IN1=LOW, IN2=HIGH → Reverse
+  - IN1=LOW, IN2=LOW → Coast (off)
+  - IN1=HIGH, IN2=HIGH → Brake
+- Datasheet: https://www.ti.com/lit/ds/symlink/drv8833.pdf
+
+### JGA25-370 DC Gearmotors (6V, 45:1 gear ratio)
+- 25mm DC motor with metal gearbox
+- **Voltage**: 6V
+- **Gear ratio**: 45:1
+- **No-load speed**: ~200 RPM @ 6V (±15%)
+- **Stall current**: 900mA @ 6V (within DRV8833's 1.5A limit)
+- Reference: https://www.openimpulse.com/blog/jga25-370-gearmotor-selector/
+
+### GDW DS041MG Micro Digital Servos
+- **Voltage**: 4.8V – 8.4V
+- **Torque**: 3.5 kg·cm @ 6.0V / 4.0 kg·cm @ 7.4V / 5.0 kg·cm @ 8.4V
+- **Speed**: 0.14s/60° @ 6.0V / 0.12s/60° @ 7.4V / 0.10s/60° @ 8.4V
+- **Control signal**: Standard PWM, 1520µs center, 333Hz
+- **Pulse width**: 1000–2000µs (90°), 500–2500µs for wider angles
+- **Rotation options**: 90°, 120°, 180°, 270°, 350°, or 360° continuous
+- **Dimensions**: 11.9 × 32.3 × 25.4 mm, ~12g
+- **Gears**: Metal (aluminum), coreless motor
+- **Temp range**: -20°C to +60°C
+- Driven from Mega using Arduino `Servo` library (1 PWM pin per servo)
+- Reference: https://servodatabase.com/servo/gdw/ds041mg
 
 ## Architecture
 
@@ -93,7 +127,9 @@ Commands are validated server-side in `main.py` (`VALID_COMMANDS` set). The fron
 
 ## Next Steps
 
-- Arduino sketch for the Elegoo Mega 2560 (parse serial commands, drive motors/servos)
-- Define motor/servo pin assignments and wiring
+- Arduino sketch for the Elegoo Mega 2560 (parse serial commands, drive motors/servos via DRV8833)
+- Define pin assignments: 4 PWM pins for DRV8833 motor control, 1+ PWM pins for servos
+- Define wiring: power distribution, DRV8833 ↔ Mega ↔ motors, servo signal/power
+- Determine JGA25-370 gear ratio variant in use
 - Extend command protocol (e.g., speed control, servo angles)
 - Deploy and test on actual Pi Zero W hardware
