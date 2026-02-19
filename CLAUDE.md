@@ -74,6 +74,9 @@ Rover — a two-board robotics project that drives a physical rover using motors
 
 ```
 rover/
+├── firmware/
+│   └── rover/
+│       └── rover.ino      # Arduino sketch: serial command parser, motor/servo control
 ├── server/
 │   ├── main.py            # FastAPI app, WebSocket endpoint, static file serving
 │   ├── serial_comm.py     # Async serial connection manager (pyserial-asyncio)
@@ -90,6 +93,7 @@ rover/
 
 - **Backend**: Python 3 + FastAPI + uvicorn (async, native WebSocket support)
 - **Serial**: pyserial-asyncio for non-blocking Pi → Mega communication
+- **Firmware**: Arduino C++ (Servo.h) — compiled via Arduino IDE/toolchain for Mega 2560
 - **Frontend**: Plain HTML/CSS/JS — no build step, served as static files by FastAPI
 - **Python version**: 3.9 on dev machine (avoid 3.10+ syntax like `str | None`)
 
@@ -125,11 +129,29 @@ Commands are validated server-side in `main.py` (`VALID_COMMANDS` set). The fron
 - **Auto-reconnect**: Frontend reconnects on WebSocket disconnect (1s interval)
 - **Serial fallback**: `SerialConnection` in `serial_comm.py` gracefully handles missing serial device and missing pyserial-asyncio import
 
+## Firmware Pin Assignments
+
+All PWM-capable pins on the Mega 2560:
+
+| Pin | Function | Component |
+|-----|----------|-----------|
+| 2   | MOTOR_A_IN1 | DRV8833 channel A (left motor) |
+| 3   | MOTOR_A_IN2 | DRV8833 channel A (left motor) |
+| 4   | MOTOR_B_IN1 | DRV8833 channel B (right motor) |
+| 5   | MOTOR_B_IN2 | DRV8833 channel B (right motor) |
+| 9   | SERVO_FRONT | Front axle steering servo |
+| 10  | SERVO_MID   | Middle axle steering servo |
+| 11  | SERVO_REAR  | Rear axle steering servo |
+
+## Steering Geometry
+
+- 6 wheels across 3 axles (front, middle, rear), 2 motors (one per side) drive all wheels
+- 3 servos steer independently per axle
+- **Counter-rotating steering**: front and rear servos turn in opposite directions for tighter turns; middle servo stays centered
+- Default steer angle: 30° offset from 90° center
+
 ## Next Steps
 
-- Arduino sketch for the Elegoo Mega 2560 (parse serial commands, drive motors/servos via DRV8833)
-- Define pin assignments: 4 PWM pins for DRV8833 motor control, 1+ PWM pins for servos
 - Define wiring: power distribution, DRV8833 ↔ Mega ↔ motors, servo signal/power
-- Determine JGA25-370 gear ratio variant in use
 - Extend command protocol (e.g., speed control, servo angles)
 - Deploy and test on actual Pi Zero W hardware
